@@ -6,7 +6,7 @@ import HttpsIcon from "@mui/icons-material/Https";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import axios from "axios";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 interface UserFormProps {
@@ -39,7 +39,7 @@ const UserForm: React.FC<UserFormProps> = ({ type }) => {
         }
       );
       if (res.status === 200) {
-        toast.success("User logged in successfully");
+        // toast.success("User logged in successfully");
         alert("User logged in successfully");
         console.log(res.data);
         localStorage.setItem("token", res.data.token);
@@ -49,21 +49,21 @@ const UserForm: React.FC<UserFormProps> = ({ type }) => {
         setpassword("");
         navigate("/tasks");
       } else {
-        toast.info(res.data.error);
+        // toast.info(res.data.error);
         alert(res.data.error);
         console.log(res.data);
       }
     } catch (error) {
       if (error.response) {
-        toast.error(`Error: ${error.response.data.error}`);
+        // toast.error(`Error: ${error.response.data.error}`);
         alert(`Error: ${error.response.data.error}`);
         console.log(error.response.data.error);
       } else if (error) {
-        toast.error("No response received from the server");
+        // toast.error("No response received from the server");
         alert("No response received from the server");
         console.log(error);
       } else {
-        toast.error("An error occurred during registration");
+        // toast.error("An error occurred during registration");
         alert("An error occurred during registration");
         console.log("Error", error);
       }
@@ -80,25 +80,25 @@ const UserForm: React.FC<UserFormProps> = ({ type }) => {
         }
       );
       if (res.status === 200 || res.status === 201) {
-        toast.success("User registered successfully");
+        // toast.success("User registered successfully");
         alert("User registered successfully");
         loginUser();
       } else {
-        toast.info(res.data.error);
+        // toast.info(res.data.error);
         alert(res.data.error);
         console.log(res.data);
       }
     } catch (error) {
       if (error.response) {
-        toast.error(`Error: ${error.response.data.error}`);
+        // toast.error(`Error: ${error.response.data.error}`);
         alert(`Error: ${error.response.data.error}`);
         console.log(error.response.data.error);
       } else if (error) {
-        toast.error("No response received from the server");
+        // toast.error("No response received from the server");
         alert("No response received from the server");
         console.log(error);
       } else {
-        toast.error("An error occurred during registration");
+        // toast.error("An error occurred during registration");
         alert("An error occurred during registration");
         console.log("Error", error);
       }
