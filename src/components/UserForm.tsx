@@ -41,7 +41,7 @@ const UserForm: React.FC<UserFormProps> = ({ type }) => {
       if (res.status === 200) {
         // toast.success("User logged in successfully");
         alert("User logged in successfully");
-        console.log(res.data);
+        
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.userId));
         localStorage.setItem("expiresIn", res.data.expiresIn);
@@ -51,7 +51,7 @@ const UserForm: React.FC<UserFormProps> = ({ type }) => {
       } else {
         // toast.info(res.data.error);
         alert(res.data.error);
-        console.log(res.data);
+        
       }
     } catch (error) {
       if (error.response) {
@@ -86,7 +86,7 @@ const UserForm: React.FC<UserFormProps> = ({ type }) => {
       } else {
         // toast.info(res.data.error);
         alert(res.data.error);
-        console.log(res.data);
+  
       }
     } catch (error) {
       if (error.response) {

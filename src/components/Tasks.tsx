@@ -98,12 +98,7 @@ const Tasks = () => {
     loginValidator();
     fetchAllTasks();
   }, []);
-  useEffect(() => {
-    console.log(upcomingTasks);
-  }, [upcomingTasks]);
-  useEffect(() => {
-    console.log(tasks);
-  }, [tasks]);
+ 
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
     const options: Intl.DateTimeFormatOptions = {
@@ -116,12 +111,7 @@ const Tasks = () => {
     };
     return date.toLocaleString("en-US", options);
   };
-  useEffect(() => {
-    console.log(recentTasks);
-  }, [recentTasks]);
-  useEffect(() => {
-    console.log(selectedTask);
-  }, [selectedTask]);
+
 
   const colums: GridColDef[] = [
     {
@@ -162,7 +152,7 @@ const Tasks = () => {
       headerName: "Created At",
       width: 200,
       renderCell: (params) => {
-        console.log(params.row);
+       
         return <div className="">{formatDate(params.value)}</div>;
       },
     },
