@@ -1,8 +1,34 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Task Manager Frontend
 
-Currently, two official plugins are available:
+A React based web application used to create and manage tasks for daily usage.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+
+## Authors
+
+- [@RTopdar](https://www.github.com/RTopdar)
+
+## Get Started
+
+After cloning the repo, run the following commands
+
+ ```bash
+  npm i
+```
+```bash
+  npm run dev
+```
+
+
+
+
+This will start the development server using Vite at port 5173, where you can check and test the application
+## Deployment
+
+This application is hosted using Firebase. To host the application, run the following commands
+
+-To convert the code to Javascript syntax and make production-ready
+```bash
+  npm run buid
+```
