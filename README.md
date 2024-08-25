@@ -28,7 +28,7 @@ This will start the development server using Vite at port 5173, where you can ch
 
 This application is hosted using Firebase. To host the application, run the following commands
 
--To convert the code to Javascript syntax and make production-ready
+To convert the code to Javascript syntax and make production-ready
 ```bash
   npm run buid
 ```
