@@ -30,5 +30,5 @@ This application is hosted using Firebase. To host the application, run the foll
 
 To convert the code to Javascript syntax and make production-ready
 ```bash
-  npm run buid
+  npm run build
 ```
