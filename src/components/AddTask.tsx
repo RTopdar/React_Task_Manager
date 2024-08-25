@@ -33,7 +33,7 @@ const AddTask: React.FC<AddTaskProps> = ({
 }) => {
   const createdBy = JSON.parse(localStorage.getItem("user")!);
   const createdAt = dayjs().toISOString();
-  const done = "false";
+  const done = false;
   const isMobile = useIsMobile();
   const [taskName, setTaskName] = useState<string>("");
   const [taskDesc, setTaskDesc] = useState<string>("");
@@ -50,12 +50,12 @@ const AddTask: React.FC<AddTaskProps> = ({
       alert("Please fill all the fields");
     } else {
       handleTaskAdd();
-      fetchAllTasks!();
-      setdisplayAddTaskModal!(false);
+      
     }
   };
 
   const handleTaskAdd = async () => {
+
     await axios.post(
       `${import.meta.env.VITE_BASE_URL}/tasks`,
       {
@@ -72,7 +72,12 @@ const AddTask: React.FC<AddTaskProps> = ({
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
-    );
+    ).then((res)=>{
+        if(res.status === 200 || res.status === 201){
+            fetchAllTasks!();
+            setdisplayAddTaskModal!(false);
+        }
+    });
   };
 
   return (

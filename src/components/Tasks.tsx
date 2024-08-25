@@ -78,6 +78,22 @@ const Tasks = () => {
     );
     setrecentTasks(recent.slice(0, 3));
   };
+  const deleteTask = async(id: string)=>{
+    
+    await axios.delete(`${import.meta.env.VITE_BASE_URL}/tasks`,{
+      params: {
+        id: id
+      },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }).then(()=>{
+      fetchAllTasks()
+      alert("Task Deleted")
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }
   useEffect(() => {
     loginValidator();
     fetchAllTasks();
@@ -274,10 +290,13 @@ const Tasks = () => {
       width: 200,
       align: "center",
 
-      renderCell: () => {
+      renderCell: (params) => {
         return (
           <div className="">
-            <Button variant="outlined" color="error">
+            <Button variant="outlined" color="error" onClick={()=>{
+              
+              deleteTask(params.row._id)
+            }}>
               Delete
             </Button>
           </div>

@@ -63,6 +63,10 @@ const Taskview: React.FC<TaskviewProps> = ({
         },
       }
     );
+    if (res.status === 200 || res.status === 201) {
+      fetchAllTasks!();
+      setdisplayTaskModal!(false);
+    }
   };
 
   if (!task) {
@@ -162,7 +166,10 @@ const Taskview: React.FC<TaskviewProps> = ({
           <div className="w-full flex justify-end pr-2">
             <Button
               variant="contained"
-              type="submit"
+              onClick={ () => {
+                handleTaskUpdate();
+                
+              }}
             >
               Save
             </Button>
