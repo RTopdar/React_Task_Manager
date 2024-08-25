@@ -1,18 +1,18 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import loginValidator from "../functions/loginValidator";
 import axios from "axios";
-import { Button, Typography } from "@mui/material";
+import { Button, MenuItem, Modal, TextField, Typography } from "@mui/material";
 import useIsMobile from "../hooks/useIsMobile";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import Taskview from "./Taskview";
+import AddTask from "./AddTask";
 
 const Tasks = () => {
   interface Task {
     CATEGORY: string;
     CREATED_AT: string;
     CREATED_BY: string;
-    DONE: boolean;
+    DONE: boolean | string;
     TASK_DESC: string;
     TASK_NAME: string;
     TASK_TIME: string;
@@ -50,6 +50,11 @@ const Tasks = () => {
   const [tasks, settasks] = useState<Task[]>([]);
   const [recentTasks, setrecentTasks] = useState<Task[]>([]);
   const [upcomingTasks, setupcomingTasks] = useState<Task[]>([]);
+  const [displayTaskModal, setdisplayTaskModal] = useState(false);
+  const [displayAddTaskModal, setdisplayAddTaskModal] = useState(false);
+  const [selectedTask, setselectedTask] = useState<Task | null>(null);
+  const [category, setcategory] = useState("");
+  const [status, setstatus] = useState("");
 
   const isMobile = useIsMobile();
   const fetchAllTasks = async () => {
@@ -98,11 +103,28 @@ const Tasks = () => {
   useEffect(() => {
     console.log(recentTasks);
   }, [recentTasks]);
+  useEffect(() => {
+    console.log(selectedTask);
+  }, [selectedTask]);
+
   const colums: GridColDef[] = [
     {
       field: "TASK_NAME",
       headerName: "Task Name",
       width: 200,
+      renderCell: (params) => {
+        return (
+          <div
+            className=""
+            onClick={() => {
+              setselectedTask(params.row);
+              setdisplayTaskModal(true);
+            }}
+          >
+            {params.value}
+          </div>
+        );
+      },
     },
     {
       field: "TASK_DESC",
@@ -112,12 +134,21 @@ const Tasks = () => {
     {
       field: "TASK_TIME",
       headerName: "Task Time",
+
       width: 200,
+      renderCell: (params) => {
+        return <div className="">{formatDate(params.value)}</div>;
+      },
     },
+
     {
       field: "CREATED_AT",
       headerName: "Created At",
       width: 200,
+      renderCell: (params) => {
+        console.log(params.row);
+        return <div className="">{formatDate(params.value)}</div>;
+      },
     },
     {
       field: "DONE",
@@ -125,8 +156,8 @@ const Tasks = () => {
       width: 200,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => { 
-        if(params.value === true){
+      renderCell: (params) => {
+        if (params.value === true) {
           return (
             <div className={`p-1  w-full h-full  `}>
               <span
@@ -136,8 +167,7 @@ const Tasks = () => {
               </span>
             </div>
           );
-        }
-        else{
+        } else {
           return (
             <div className={`p-1  w-full h-full  `}>
               <span
@@ -148,7 +178,51 @@ const Tasks = () => {
             </div>
           );
         }
-      }
+      },
+    },
+    {
+      field: "MARK_DONE",
+      headerName: "",
+      width: 200,
+      align: "center",
+      renderCell: (params) => {
+        return (
+          <div className="">
+            <Button
+              variant="outlined"
+              disabled={params.row.DONE === true}
+              onClick={() => {
+                axios
+                  .post(
+                    `${import.meta.env.VITE_BASE_URL}/tasks/mark`,
+                    {
+                      id: params.row._id,
+                    },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                          "token"
+                        )}`,
+                      },
+                    }
+                  )
+                  .then(() => {
+                    if (category === "" && status === "") {
+                      fetchAllTasks();
+                    } else {
+                      fetchFilterData();
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }}
+            >
+              Mark Done
+            </Button>
+          </div>
+        );
+      },
     },
     {
       field: "CATEGORY",
@@ -175,30 +249,22 @@ const Tasks = () => {
       },
     },
     {
-      field: "View",
-      headerName: "",
-      width: 200,
-      align: "center",
-
-      renderCell: () => {
-        return (
-          <div className="">
-            <Button variant="outlined">View</Button>
-          </div>
-        );
-      },
-    },
-    {
       field: "Edit",
       headerName: "",
       width: 200,
       align: "center",
 
-      renderCell: () => {
+      renderCell: (params) => {
         return (
-          <div className="">
-            <Button variant="outlined">Edit</Button>
-          </div>
+          <Button variant="outlined"
+           
+            onClick={() => {
+              setselectedTask(params.row);
+              setdisplayTaskModal(true);
+            }}
+          >
+            Edit
+          </Button>
         );
       },
     },
@@ -219,8 +285,35 @@ const Tasks = () => {
       },
     },
   ];
+  const fetchFilterData = async () => {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/tasks/filter`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        params: {
+          category: category,
+          done: status,
+        },
+      }
+    );
+    settasks(res.data);
+  };
+
   return (
     <section className="h-full flex flex-col items-center mb-2  ">
+      <Modal open={displayTaskModal} onClose={() => setdisplayTaskModal(false)}>
+        <Taskview
+          task={selectedTask}
+          setdisplayTaskModal={setdisplayTaskModal}
+          fetchAllTasks={fetchAllTasks}
+        />
+      </Modal>
+      <Modal open={displayAddTaskModal} onClose={() => setdisplayAddTaskModal(false)}>
+        <AddTask setdisplayAddTaskModal={setdisplayAddTaskModal} fetchAllTasks={fetchAllTasks} />
+      </Modal>
+
       <div className="md:h-1/5 lg:h-1/5 h-[20%] p-1 container ">
         <div className="h-full flex flex-col">
           <Typography
@@ -231,10 +324,17 @@ const Tasks = () => {
           >
             Upcoming Tasks
           </Typography>
-          <div className="w-full h-full overflow-x-auto flex flex-row gap-x-2 p-1 md:p-2 lg:p-2 ">
-            {upcomingTasks.map((task: Task) => {
+          <div className="w-full h-full overflow-x-auto flex flex-row gap-x-2 px-1 md:p-2 lg:p-2 ">
+            {upcomingTasks.map((task: Task, index: number) => {
               return (
-                <div className=" w-1/3 h-full bg-white border border-solid border-gray-400 rounded-lg p-1 ">
+                <div
+                  className=" w-1/3 h-full bg-white border border-solid border-gray-400 rounded-lg p-1 "
+                  key={index}
+                  onClick={()=>{
+                    setselectedTask(task)
+                    setdisplayTaskModal(true)
+                  }}
+                >
                   <div className="font-bold text-md md:text-lg lg:text-lg mb-2 h-[35%] md:h-[30%] ">
                     {task.TASK_NAME}
                   </div>
@@ -265,10 +365,17 @@ const Tasks = () => {
           >
             Recently Added
           </Typography>
-          <div className="w-full h-full overflow-x-auto flex flex-row gap-x-2 p-1 md:p-2 lg:p-2 ">
-            {recentTasks.map((task: Task) => {
+          <div className="w-full h-full overflow-x-auto flex flex-row gap-x-2 px-1 md:p-2 lg:p-2 ">
+            {recentTasks.map((task: Task, index: number) => {
               return (
-                <div className=" w-1/3 h-full bg-white border border-solid border-gray-400 rounded-lg p-1 ">
+                <div
+                  className=" w-1/3 h-full bg-white border border-solid border-gray-400 rounded-lg p-1 "
+                  key={index}
+                  onClick={()=>{
+                    setselectedTask(task)
+                    setdisplayTaskModal(true)
+                  }}
+                >
                   <div className="font-bold text-md md:text-lg lg:text-lg mb-2 h-[35%] md:h-[30%] ">
                     {task.TASK_NAME}
                   </div>
@@ -289,17 +396,76 @@ const Tasks = () => {
           </div>
         </div>
       </div>
-      <div className="h-[55%] container  pb-2">
+      <div className="h-[55%] container p-1 pb-2">
         <div className="h-full ">
-          <Typography
-            variant={isMobile ? "h6" : "h4"}
-            sx={{
-              fontWeight: "bold",
-            }}
-          >
-            All Tasks
-          </Typography>
-          <div className="h-[450px] md:">
+          <div className="w-full mb-1 flex justify-between">
+            <Typography
+              variant={isMobile ? "h6" : "h4"}
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              All Tasks
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => setdisplayAddTaskModal(true)}
+            >
+              Add Task
+            </Button>
+          </div>
+          <div className="w-full flex gap-x-1 justify-evenly">
+            <TextField
+              select
+              label="Category"
+              variant="outlined"
+              fullWidth
+              value={category}
+              onChange={(e) => {
+                setcategory(e.target.value);
+              }}
+            >
+              {categories.map((category) => {
+                return (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                );
+              })}
+            </TextField>
+            <TextField
+              select
+              label="Status"
+              variant="outlined"
+              value={status}
+              fullWidth
+              onChange={(e) => {
+                setstatus(e.target.value);
+              }}
+            >
+              <MenuItem value={"true"}>Done</MenuItem>
+              <MenuItem value={"false"}>Pending</MenuItem>
+            </TextField>
+            <Button
+              variant="contained"
+              onClick={() => {
+                fetchFilterData();
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                fetchAllTasks();
+                setcategory("");
+                setstatus("");
+              }}
+            >
+              Clear
+            </Button>
+          </div>
+          <div className="h-[450px] mt-1 md:mt-2 lg:mt-2">
             <DataGrid
               rows={tasks}
               columns={colums}
@@ -307,9 +473,6 @@ const Tasks = () => {
                 return tasks._id;
               }}
               hideFooter
-              slots={{
-                toolbar: GridToolbar,
-              }}
             />
           </div>
         </div>
