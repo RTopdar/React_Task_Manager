@@ -1,5 +1,5 @@
 
-# Task Manager Frontend
+# Task Manager 
 
 A React based web application used to create and manage tasks for daily usage.
 
