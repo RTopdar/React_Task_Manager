@@ -3,6 +3,8 @@
 
 A React based web application used to create and manage tasks for daily usage.
 
+[Hosted URL](https://task-manager-mern-b6436.web.app/)
+
 
 
 ## Authors
